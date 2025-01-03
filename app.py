@@ -13,6 +13,7 @@ import time
 import streamlit as st
 from datetime import date
 
+os.system("bash setup.sh")
 
 db_dir = rdb_dir = r"./chroma_db_directory"
 os.makedirs(db_dir, exist_ok=True)
