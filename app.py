@@ -21,12 +21,19 @@ os.makedirs(db_dir, exist_ok=True)
 lamma_new = "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"
 
 def initialize_chroma():
-    # Update the initialization settings
-    settings = Settings(
-        persist_directory=db_dir,
-        chroma_db_impl="duckdb+parquet"
-    )
-    return chromadb.PersistentClient(path=db_dir)
+    try:
+        settings = Settings(
+            is_persistent=True,
+            persist_directory="./chroma_db_directory",
+            anonymized_telemetry=False,
+            allow_reset=True
+        )
+        # Use Client instead of PersistentClient for better compatibility
+        client = chromadb.Client(settings)
+        return client
+    except Exception as e:
+        st.error(f"Failed to initialize ChromaDB: {str(e)}")
+        return None
 
 # def initialize_chroma():
 #     return chromadb.PersistentClient(path=db_dir)
