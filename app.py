@@ -1,9 +1,9 @@
 import pandas as pd
 #import chromadb
-from chromadb.utils import embedding_functions
+#from chromadb.utils import embedding_functions
 import os
-from chromadb import Client
-from chromadb.config import Settings
+#from chromadb import Client
+#from chromadb.config import Settings
 from groq import Groq
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -20,43 +20,43 @@ db_dir = rdb_dir = r"./chroma_db_directory"
 os.makedirs(db_dir, exist_ok=True)
 lamma_new = "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"
 
-def initialize_chroma():
-    # Update the initialization settings
-    settings = Settings(
-        persist_directory=db_dir,
-        chroma_db_impl="duckdb+parquet"
-    )
-    return chromadb.PersistentClient(path=db_dir)
+# def initialize_chroma():
+#     # Update the initialization settings
+#     settings = Settings(
+#         persist_directory=db_dir,
+#         chroma_db_impl="duckdb+parquet"
+#     )
+#     return chromadb.PersistentClient(path=db_dir)
 
 # def initialize_chroma():
 #     return chromadb.PersistentClient(path=db_dir)
 
-def store_in_chroma(collection_name, data):
-    client = initialize_chroma()
-    collection = client.get_or_create_collection(
-        name=collection_name,
-        metadata={"description": f"{collection_name} data"}
-    )
+# def store_in_chroma(collection_name, data):
+#     client = initialize_chroma()
+#     collection = client.get_or_create_collection(
+#         name=collection_name,
+#         metadata={"description": f"{collection_name} data"}
+#     )
     
-    existing_ids = collection.get()['ids'] if collection.count() > 0 else []
-    new_data = []
+#     existing_ids = collection.get()['ids'] if collection.count() > 0 else []
+#     new_data = []
     
-    for idx, record in enumerate(data):
-        record_id = f"{collection_name}_{idx}"
-        if record_id not in existing_ids:
-            new_data.append({
-                "id": record_id,
-                "metadata": record,
-                "document": record.get("hotel", record.get("attraction_name", record.get("flight", "N/A")))
-            })
+#     for idx, record in enumerate(data):
+#         record_id = f"{collection_name}_{idx}"
+#         if record_id not in existing_ids:
+#             new_data.append({
+#                 "id": record_id,
+#                 "metadata": record,
+#                 "document": record.get("hotel", record.get("attraction_name", record.get("flight", "N/A")))
+#             })
     
-    if new_data:
-        collection.add(
-            ids=[entry["id"] for entry in new_data],
-            metadatas=[entry["metadata"] for entry in new_data],
-            documents=[entry["document"] for entry in new_data]
-        )
-        st.write(f"Added {len(new_data)} new records to collection: {collection_name}")
+#     if new_data:
+#         collection.add(
+#             ids=[entry["id"] for entry in new_data],
+#             metadatas=[entry["metadata"] for entry in new_data],
+#             documents=[entry["document"] for entry in new_data]
+#         )
+#         st.write(f"Added {len(new_data)} new records to collection: {collection_name}")
 
 
 def setup_driver():
@@ -412,14 +412,14 @@ if st.button("Generate Itinerary", type="primary"):
             # Save to CSV
             # df = pd.DataFrame(hotels)
             # df.to_csv('Hotel.csv', index=False)
-            store_in_chroma("hotels", hotels)
+            #store_in_chroma("hotels", hotels)
             
             attractions = Attraction(location, str(departure_date), country_code)
             # Save to CSV
             # df = pd.DataFrame(attractions)
             # df.to_csv('Attractions.csv', index=False)
 
-            store_in_chroma("attractions", attractions)
+            #store_in_chroma("attractions", attractions)
             
             
             flight_url = generate_flight_booking_url(departure_airport, arrival_airport, departure_date, adults, children, children_ages, cabin_class)
@@ -427,7 +427,7 @@ if st.button("Generate Itinerary", type="primary"):
             # # Save to CSV
             # df = pd.DataFrame(flights)
             # df.to_csv('Flights.csv', index=False)
-            store_in_chroma("flights", flights)
+            #store_in_chroma("flights", flights)
             
             st.success("Data collection complete!")
             
