@@ -1,11 +1,9 @@
 import pandas as pd
-#import chromadb
-#from chromadb.utils import embedding_functions
 import os
-#from chromadb import Client
-#from chromadb.config import Settings
 from groq import Groq
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -20,44 +18,6 @@ db_dir = rdb_dir = r"./chroma_db_directory"
 os.makedirs(db_dir, exist_ok=True)
 lamma_new = "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"
 
-# def initialize_chroma():
-#     # Update the initialization settings
-#     settings = Settings(
-#         persist_directory=db_dir,
-#         chroma_db_impl="duckdb+parquet"
-#     )
-#     return chromadb.PersistentClient(path=db_dir)
-
-# def initialize_chroma():
-#     return chromadb.PersistentClient(path=db_dir)
-
-# def store_in_chroma(collection_name, data):
-#     client = initialize_chroma()
-#     collection = client.get_or_create_collection(
-#         name=collection_name,
-#         metadata={"description": f"{collection_name} data"}
-#     )
-    
-#     existing_ids = collection.get()['ids'] if collection.count() > 0 else []
-#     new_data = []
-    
-#     for idx, record in enumerate(data):
-#         record_id = f"{collection_name}_{idx}"
-#         if record_id not in existing_ids:
-#             new_data.append({
-#                 "id": record_id,
-#                 "metadata": record,
-#                 "document": record.get("hotel", record.get("attraction_name", record.get("flight", "N/A")))
-#             })
-    
-#     if new_data:
-#         collection.add(
-#             ids=[entry["id"] for entry in new_data],
-#             metadatas=[entry["metadata"] for entry in new_data],
-#             documents=[entry["document"] for entry in new_data]
-#         )
-#         st.write(f"Added {len(new_data)} new records to collection: {collection_name}")
-
 
 def setup_driver():
     options = webdriver.ChromeOptions()
@@ -68,14 +28,14 @@ def setup_driver():
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
-    return webdriver.Chrome(options=options)
-
+    service = Service(ChromeDriverManager().install())
+    return webdriver.Chrome(service=service, options=options)
+    
 def Hotels(checkin_date, checkout_date, location):
     driver = setup_driver()
     hotels_list = []
 
     def handle_popups():
-        """Handle all possible popups on the page."""
         popup_selectors = [
             "button[aria-label='Dismiss sign in information.']",
             "button[aria-label='Close']",
@@ -295,18 +255,6 @@ def Flight(url):
     
 
 def generate_itinerary(user_query, hotels, flights, attractions):
-    """
-    Generate a personalized travel itinerary based on user queries and scraped data.
-
-    Args:
-        user_query (str): The user's travel query containing preferences and constraints.
-        hotels (list): A list of dictionaries containing hotel data.
-        flights (list): A list of dictionaries containing flight data.
-        attractions (list): A list of dictionaries containing attraction data.
-
-    Returns:
-        str: The generated itinerary or an error message if the model call fails.
-    """
     # Format each dataset into a structured context for the model
     hotels_context = "\n".join(
         f"- Name: {hotel.get('hotel', 'N/A')}, Price: {hotel.get('price', 'N/A')}, "
@@ -409,26 +357,9 @@ if st.button("Generate Itinerary", type="primary"):
     with st.spinner("Gathering travel data..."):
         try:
             hotels = Hotels(str(checkin_date), str(checkout_date), location)
-            # Save to CSV
-            # df = pd.DataFrame(hotels)
-            # df.to_csv('Hotel.csv', index=False)
-            #store_in_chroma("hotels", hotels)
-            
-            attractions = Attraction(location, str(departure_date), country_code)
-            # Save to CSV
-            # df = pd.DataFrame(attractions)
-            # df.to_csv('Attractions.csv', index=False)
-
-            #store_in_chroma("attractions", attractions)
-            
-            
+            attractions = Attraction(location, str(departure_date), country_code)    
             flight_url = generate_flight_booking_url(departure_airport, arrival_airport, departure_date, adults, children, children_ages, cabin_class)
             flights = Flight(flight_url)
-            # # Save to CSV
-            # df = pd.DataFrame(flights)
-            # df.to_csv('Flights.csv', index=False)
-            #store_in_chroma("flights", flights)
-            
             st.success("Data collection complete!")
             
             with st.spinner("Generating personalized itinerary..."):
