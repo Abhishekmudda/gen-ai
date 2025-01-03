@@ -22,13 +22,13 @@ lamma_new = "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"
 
 
 def setup_driver():
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--disable-notifications')
-    options.add_argument('--disable-blink-features=AutomationControlled')
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--disable-notifications')
+    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     
 def Hotels(checkin_date, checkout_date, location):
