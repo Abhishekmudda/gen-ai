@@ -13,6 +13,8 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 import logging
 import time
 import streamlit as st
+from datetime import date
+
 
 db_dir = rdb_dir = r"./chroma_db_directory"
 os.makedirs(db_dir, exist_ok=True)
@@ -341,12 +343,13 @@ def generate_itinerary(user_query, hotels, flights, attractions):
         f"Context:\n{context}\n\n"
         f"Query:\n{user_query}\n\n"
         "Please include the following in the itinerary:\n"
-        "- Detailed day-wise schedule with activities, hotel stays, and travel.\n"
+        "- Detailed day-wise schedule with activities, hotel stays based on reviews, and travel.\n"
         "- Mention the selected hotels with check-in and check-out times.\n"
         "- Include flight details such as departure and arrival times.\n"
         "- Highlight recommended attractions for each day.\n"
         "- Suggest meal options or restaurants if possible.\n\n"
-        "Provide the output in a clear, structured format."
+        "Provide the output in a clear, structured format.\n"
+        "At last based on suggestions provide a total budget of trip"
     )
     # API call to the model
     try:
@@ -392,6 +395,15 @@ user_query = st.text_area(
     "Trip Preferences",
     "Plan a family trip including affordable flights, mid-range hotels, and top attractions."
 )
+
+# Date validation
+today = date.today()
+if checkin_date < today:
+    st.error("Check-in date cannot be earlier than today's date. Please select a valid date.")
+if checkout_date < checkin_date:
+    st.error("Check-out date cannot be earlier than the check-in date. Please select a valid date.")
+if departure_date < today:
+    st.error("Flight date cannot be earlier than today's date. Please select a valid date.")
 
 if st.button("Generate Itinerary", type="primary"):
     with st.spinner("Gathering travel data..."):
