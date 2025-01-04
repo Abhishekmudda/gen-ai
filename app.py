@@ -22,14 +22,28 @@ lamma_new = "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"
 
 
 def setup_driver():
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument('--disable-notifications')
-    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    # chrome_options = Options()
+    # chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument('--disable-dev-shm-usage')
+    # chrome_options.add_argument('--disable-notifications')
+    # chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+    # chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    # return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    edge_options = EdgeOptions()
+    edge_options.add_argument('--headless')  # Run in headless mode
+    edge_options.add_argument('--no-sandbox')
+    edge_options.add_argument('--disable-dev-shm-usage')
+    edge_options.add_argument('--disable-notifications')
+    edge_options.add_argument('--disable-blink-features=AutomationControlled')
+    return webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=edge_options)
+    # firefox_options = FirefoxOptions()
+    # firefox_options.add_argument('--headless')  # Run in headless mode
+    # firefox_options.add_argument('--no-sandbox')
+    # firefox_options.add_argument('--disable-dev-shm-usage')
+    # firefox_options.add_argument('--disable-notifications')
+    # return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=firefox_options)
+
     
 def Hotels(checkin_date, checkout_date, location):
     driver = setup_driver()
