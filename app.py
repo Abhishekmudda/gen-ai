@@ -27,15 +27,41 @@ subprocess.run(['bash', './setup.sh'], check=True)
 lamma_new = "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"
 
 def setup_driver():
-    # Setup for Edge browser
-    edge_options = EdgeOptions()
-    edge_options.add_argument('--headless')  # Run in headless mode
-    edge_options.add_argument('--no-sandbox')
-    edge_options.add_argument('--disable-dev-shm-usage')
-    edge_options.add_argument('--disable-notifications')
-    edge_options.add_argument('--disable-blink-features=AutomationControlled')
-    return webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=edge_options)
+    """
+    Set up Edge WebDriver with proper error handling and configuration
+    """
+    try:
+        # Run setup script if driver isn't already installed
+        if not os.path.exists('/usr/local/bin/msedgedriver'):
+            print("Setting up Edge and EdgeDriver...")
+            subprocess.run(['sudo', 'bash', './setup.sh'], 
+                         check=True, 
+                         capture_output=True, 
+                         text=True)
 
+        # Configure Edge options
+        edge_options = EdgeOptions()
+        edge_options.add_argument('--headless')
+        edge_options.add_argument('--no-sandbox')
+        edge_options.add_argument('--disable-dev-shm-usage')
+        edge_options.add_argument('--disable-notifications')
+        edge_options.add_argument('--disable-blink-features=AutomationControlled')
+
+        # Create service with explicit path to driver
+        edge_service = EdgeService(executable_path='/usr/local/bin/msedgedriver')
+
+        # Initialize the driver
+        driver = webdriver.Edge(service=edge_service, options=edge_options)
+        print("Edge WebDriver setup successful")
+        return driver
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error during setup script execution: {e}")
+        print(f"Setup script output: {e.output}")
+        raise
+    except Exception as e:
+        print(f"Error setting up Edge WebDriver: {e}")
+        raise
 
 # def setup_driver():
 #     # chrome_options = Options()
