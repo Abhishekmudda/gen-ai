@@ -1,41 +1,33 @@
-import pandas as pd
 import os
-from groq import Groq
+import logging
+import time
+import pandas as pd
+from datetime import date
+import streamlit as st
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, WebDriverException
-import logging
-import time
-import streamlit as st
-from datetime import date
-from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
-from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
+from groq import Groq
+import subprocess
 
-os.system("bash setup.sh")
+# Run the bash script to install Firefox and geckodriver
+subprocess.run(['bash', './setup.sh'], check=True)
 
-#db_dir = rdb_dir = r"./chroma_db_directory"
-#os.makedirs(db_dir, exist_ok=True)
 lamma_new = "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"
 
-
 def setup_driver():
-    # chrome_options = Options()
-    # chrome_options.add_argument('--headless')
-    # chrome_options.add_argument('--no-sandbox')
-    # chrome_options.add_argument('--disable-dev-shm-usage')
-    # chrome_options.add_argument('--disable-notifications')
-    # chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    # chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    # return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    # Setup for Edge browser
     edge_options = EdgeOptions()
     edge_options.add_argument('--headless')  # Run in headless mode
     edge_options.add_argument('--no-sandbox')
@@ -43,12 +35,30 @@ def setup_driver():
     edge_options.add_argument('--disable-notifications')
     edge_options.add_argument('--disable-blink-features=AutomationControlled')
     return webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=edge_options)
-    # firefox_options = FirefoxOptions()
-    # firefox_options.add_argument('--headless')  # Run in headless mode
-    # firefox_options.add_argument('--no-sandbox')
-    # firefox_options.add_argument('--disable-dev-shm-usage')
-    # firefox_options.add_argument('--disable-notifications')
-    # return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=firefox_options)
+
+
+# def setup_driver():
+#     # chrome_options = Options()
+#     # chrome_options.add_argument('--headless')
+#     # chrome_options.add_argument('--no-sandbox')
+#     # chrome_options.add_argument('--disable-dev-shm-usage')
+#     # chrome_options.add_argument('--disable-notifications')
+#     # chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+#     # chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+#     # return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+#     edge_options = EdgeOptions()
+#     edge_options.add_argument('--headless')  # Run in headless mode
+#     edge_options.add_argument('--no-sandbox')
+#     edge_options.add_argument('--disable-dev-shm-usage')
+#     edge_options.add_argument('--disable-notifications')
+#     edge_options.add_argument('--disable-blink-features=AutomationControlled')
+#     return webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=edge_options)
+#     # firefox_options = FirefoxOptions()
+#     # firefox_options.add_argument('--headless')  # Run in headless mode
+#     # firefox_options.add_argument('--no-sandbox')
+#     # firefox_options.add_argument('--disable-dev-shm-usage')
+#     # firefox_options.add_argument('--disable-notifications')
+#     # return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=firefox_options)
 
     
 def Hotels(checkin_date, checkout_date, location):
