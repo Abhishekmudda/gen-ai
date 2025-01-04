@@ -13,6 +13,12 @@ import logging
 import time
 import streamlit as st
 from datetime import date
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.edge.options import Options as EdgeOptions
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 os.system("bash setup.sh")
 
